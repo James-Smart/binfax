@@ -86,6 +86,11 @@
 
   .idx{cursor:pointer;}
   .idx:hover, .idx:focus-visible{background:var(--tt-blue); outline:none;}
+  .ans{cursor:pointer;}
+  .ans:hover, .ans:focus-visible{background:var(--tt-blue); outline:none;}
+  .bgR{background:var(--tt-red); color:var(--tt-white); text-shadow:none;}
+  .face{display:flex; height:1.22em;}
+  .face span{flex:none; width:1ch; height:100%;}
   main{height:21.96em; overflow:hidden;} /* exactly 18 rows */
   .page{display:none;}
   .page.on{display:block;}
@@ -99,7 +104,7 @@
     <!-- Rows 2-6: mosaic banner -->
     <div class="banner" id="banner" aria-hidden="true"></div>
     <!-- Row 7 -->
-    <div class="row strap"><span>CLACTON DECIDES · BY-ELECTION</span><span id="rotor" aria-label="page rotation">1/4</span></div>
+    <div class="row strap"><span id="straptext">CLACTON DECIDES · BY-ELECTION</span><span id="rotor" aria-label="page rotation">1/4</span></div>
 
     <!-- Rows 8-24: 17 content rows per page -->
     <main>
@@ -116,11 +121,11 @@
         <div class="row c">Farage quit on 7 July amid a</div>
         <div class="row c">probe into a £5m payment, gifts</div>
         <div class="row c">and crypto lobbying. Poll: 6 Aug.</div>
-        <div class="row">&nbsp;</div>
         <div class="row"><span class="bgM w flash"> INTERGALACTIC. INDEPENDENT. IN A BIN </span></div>
         <div class="row y idx" data-go="102" tabindex="0">BINFACE MANIFESTO IN FULL.......102</div>
         <div class="row y idx" data-go="103" tabindex="0">ODDS SLASHED ON THE COUNT.......103</div>
         <div class="row y idx" data-go="104" tabindex="0">QUOTES OF THE CAMPAIGN..........104</div>
+        <div class="row m idx" data-go="152" tabindex="0">BAMBOOZLE! THE ELECTION QUIZ....152</div>
       </section>
 
       <!-- P102 MANIFESTO -->
@@ -185,6 +190,9 @@
         <div class="row g">MARTIN BELL URGES VOTERS TO BACK</div>
         <div class="row g">"THE RIGHT INDEPENDENT CANDIDATE"</div>
       </section>
+
+      <!-- P152 BAMBOOZLE QUIZ (rendered by JS) -->
+      <section class="page" id="p152"></section>
     </main>
 
     <!-- Row 25 -->
@@ -211,17 +219,25 @@
   const WORD = "CEEFAX";
   const ROWCOLS = ["#f00","#ff0","#0f0","#0ff","#00f"];
   const banner = document.getElementById("banner");
-  for (let r = 0; r < 5; r++) {
-    const div = document.createElement("div");
-    div.className = "brow";
-    const cells = "  " + [...WORD].map(ch => GLYPHS[ch][r]).join(" ");
-    for (const c of cells) {
-      const cell = document.createElement("span");
-      if (c === "#") cell.style.background = ROWCOLS[r];
-      div.appendChild(cell);
+  let bannerMode = "";
+  function renderBanner(mode){
+    if (mode === bannerMode) return;
+    bannerMode = mode;
+    if (mode === "quiz") { banner.innerHTML = logoRows(); return; }
+    banner.innerHTML = "";
+    for (let r = 0; r < 5; r++) {
+      const div = document.createElement("div");
+      div.className = "brow";
+      const cells = "  " + [...WORD].map(ch => GLYPHS[ch][r]).join(" ");
+      for (const c of cells) {
+        const cell = document.createElement("span");
+        if (c === "#") cell.style.background = ROWCOLS[r];
+        div.appendChild(cell);
+      }
+      banner.appendChild(div);
     }
-    banner.appendChild(div);
   }
+  renderBanner("ceefax");
 
   // Header clock, Ceefax format: Thu 09 Jul 21:34/56
   const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -254,33 +270,219 @@
   window.addEventListener("orientationchange", fit);
   fit();
 
-  // Page carousel: rotate like Ceefax used to, every 20 seconds.
-  // Manual navigation (fastext, index, arrow keys) restarts the timer.
+  // Page navigation + carousel. News pages rotate every 20 seconds like
+  // Ceefax used to; the quiz (P152) holds the carousel while you play.
   const ORDER = ["101","102","103","104"];
+  const NAV = ["News","Pledges","Odds","Quotes"];
   const DWELL = 20000;
-  let current = 0, timer;
-  function show(i){
-    current = ((i % ORDER.length) + ORDER.length) % ORDER.length;
-    const n = ORDER[current];
+  let currentPage = "101", timer;
+  const rotor = document.getElementById("rotor");
+  const btns = [...document.querySelectorAll(".fastext button")];
+
+  function setButtons(mode){ // "nav" | "intro" | "abcd"
+    btns.forEach((b,i) => {
+      b.textContent = mode === "abcd" ? "ABCD"[i]
+                    : (mode === "intro" && i === 0) ? "Begin"
+                    : NAV[i];
+    });
+  }
+  function go(n){
+    currentPage = n;
     document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "p"+n));
     document.getElementById("pageno").textContent = n;
     document.getElementById("pageno2").textContent = n;
-    document.getElementById("rotor").textContent = `${current+1}/${ORDER.length}`;
+    if (n === "152") {
+      renderBanner("quiz");
+      document.getElementById("straptext").textContent = "BAMBOOZLE! · NO CONFERRING";
+      renderQuizIntro();
+    } else {
+      renderBanner("ceefax");
+      document.getElementById("straptext").textContent = "CLACTON DECIDES · BY-ELECTION";
+      rotor.textContent = `${ORDER.indexOf(n)+1}/${ORDER.length}`;
+      setButtons("nav");
+    }
+    restart();
   }
   function restart(){
     clearInterval(timer);
-    timer = setInterval(() => show(current + 1), DWELL);
+    timer = setInterval(() => {
+      const i = ORDER.indexOf(currentPage);
+      if (i !== -1) go(ORDER[(i+1) % ORDER.length]);   // quiz never rotates away
+    }, DWELL);
   }
-  function go(n){ show(ORDER.indexOf(n)); restart(); }
   restart();
 
   document.querySelectorAll("[data-go]").forEach(el => {
-    el.addEventListener("click", () => go(el.dataset.go));
-    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(el.dataset.go); } });
+    const act = () => {
+      if (currentPage === "152" && el.parentElement.classList.contains("fastext")) {
+        const i = btns.indexOf(el);
+        if (quiz.phase === "question") { answerQuiz(i); return; }
+        if (quiz.phase === "intro" && i === 0) { startQuiz(); return; }
+      }
+      go(el.dataset.go);
+    };
+    el.addEventListener("click", act);
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); act(); } });
   });
   window.addEventListener("keydown", e => {
-    if (e.key === "ArrowRight") { show(current + 1); restart(); }
-    if (e.key === "ArrowLeft")  { show(current - 1); restart(); }
+    if (currentPage === "152") {
+      const k = e.key.toLowerCase();
+      if (quiz.phase === "question" && "abcd".includes(k)) answerQuiz("abcd".indexOf(k));
+      if (quiz.phase === "intro" && k === "b") startQuiz();
+      if (e.key === "ArrowLeft" || e.key === "ArrowRight") go("101");
+      return;
+    }
+    const i = ORDER.indexOf(currentPage);
+    if (e.key === "ArrowRight") go(ORDER[(i+1) % ORDER.length]);
+    if (e.key === "ArrowLeft")  go(ORDER[(i-1+ORDER.length) % ORDER.length]);
+  });
+
+  // --- P152: BAMBOOZLE! election quiz, with your host Binber Boozler ---
+  const QUIZ = [
+    {q:["Who resigned his seat to trigger","the Clacton by-election?"],
+     a:["COUNT BINFACE","NIGEL FARAGE","A DISGRUNTLED SEAGULL","THE SPEAKER"], c:1},
+    {q:["Under a Binface government, the","price of a 99 Flake is capped at?"],
+     a:["99p","£3.50","TWO EUROS","FREE WITH EVERY BIN"], c:0},
+    {q:["Which national treasure does the","Count pledge to nationalise?"],
+     a:["THE CHUCKLE BROTHERS","GREGGS","ADELE","STORMZY"], c:2},
+    {q:["How many affordable homes does","the manifesto promise to build?"],
+     a:["40,000","A BUNGALOW EACH","NONE AT ALL","AT LEAST ONE (1)"], c:3},
+    {q:["London Bridge is to be renamed","in honour of whom?"],
+     a:["JEFF BRIDGES","PHOEBE WALLER-BRIDGE","TOWER BRIDGE","BRIDGET JONES"], c:1},
+    {q:["Manifesto pledge no.6 is to","restore Ceefax. Its status?"],
+     a:["IMPOSSIBLE","UNDER REVIEW","AWAITING FUNDING","YOU ARE LOOKING AT IT"], c:3},
+  ];
+  const ACOL = ["r","g","y","c"];
+  const quiz = { phase:"intro", qi:0, score:0, lock:false };
+  const p152 = document.getElementById("p152");
+
+  // Original mosaic art (drawn here, not copied from Teletext Ltd):
+  // cell colour codes — y yellow, r red, w white, o cyan, m magenta
+  const MCOL = {y:"var(--tt-yellow)", r:"var(--tt-red)", w:"#fff", o:"var(--tt-cyan)", m:"var(--tt-magenta)"};
+  function mosaicRows(rows, indent){
+    return rows.map(line => `<div class="face"><span style="width:${indent}ch"></span>${
+      [...line].map(c => `<span style="background:${MCOL[c] || "transparent"}"></span>`).join("")
+    }</div>`).join("");
+  }
+
+  // BAMBOOZLE! wordmark: variable-width pixel letters, 39 cols total
+  const LFONT = {
+    B:["##.","#.#","##.","#.#","##."],
+    A:[".#.","#.#","###","#.#","#.#"],
+    M:["#...#","##.##","#.#.#","#...#","#...#"],
+    O:["###","#.#","#.#","#.#","###"],
+    Z:["###","..#",".#.","#..","###"],
+    L:["#..","#..","#..","#..","###"],
+    E:["###","#..","##.","#..","###"],
+    "!":["#","#","#",".","#"],
+  };
+  const LOGO = Array.from({length:5}, (_,r) =>
+    [..."BAMBOOZLE!"].map(ch => LFONT[ch][r].replace(/#/g, ch === "!" ? "r" : "y")).join(".")
+  );
+  const logoRows = () => mosaicRows(LOGO, 0);
+
+  // Binber Boozler himself: lid handle, bin head, visor eyes,
+  // bow tie, red suit with shirt and hands
+  const HOST = [
+    "....www....",
+    ".wwwwwwwww.",
+    "..wwwwwww..",
+    "..wowwwow..",
+    "..wwwwwww..",
+    "..w.w.w.w..",
+    "...wwwww...",
+    "....mmm....",
+    ".rrrwwwrrr.",
+    "rrrrwwwrrrr",
+    "yrrrwwwrrry",
+  ];
+  const hostRows = () => mosaicRows(HOST, 14);
+  const hostHead = () => mosaicRows(HOST.slice(0, 7), 14);
+  function renderQuizIntro(){
+    quiz.phase = "intro"; quiz.qi = 0; quiz.score = 0; quiz.lock = false;
+    rotor.textContent = "QUIZ";
+    setButtons("intro");
+    p152.innerHTML = `
+      ${hostRows()}
+      <div class="row c">      YOUR HOST, BINBER BOOZLER</div>
+      <div class="row">&nbsp;</div>
+      <div class="row w">Six questions on the by-election.</div>
+      <div class="row w">No prizes, only glory.</div>
+      <div class="row">&nbsp;</div>
+      <div class="row"><span class="bgR flash" data-quiz-start style="cursor:pointer"> PRESS RED TO BEGIN </span></div>
+      <div class="row y idx" data-go="101" tabindex="0">CHICKEN OUT....................101</div>`;
+  }
+  function startQuiz(){
+    quiz.phase = "question"; quiz.qi = 0; quiz.score = 0;
+    renderQuestion();
+  }
+  function renderQuestion(){
+    const item = QUIZ[quiz.qi];
+    quiz.lock = false;
+    rotor.textContent = `Q${quiz.qi+1}/${QUIZ.length}`;
+    setButtons("abcd");
+    p152.innerHTML = `
+      <div class="row c">QUESTION ${quiz.qi+1} OF ${QUIZ.length}            SCORE ${quiz.score}</div>
+      <div class="row">&nbsp;</div>
+      <div class="row w">${item.q[0]}</div>
+      <div class="row w">${item.q[1]}</div>
+      <div class="row">&nbsp;</div>
+      ${item.a.map((a,i) => `<div class="row ans ${ACOL[i]}" data-ans="${i}" tabindex="0">${"ABCD"[i]}  ${a}</div>`).join("")}
+      <div class="row">&nbsp;</div>
+      <div class="row" id="qfb">&nbsp;</div>
+      <div class="row">&nbsp;</div>
+      <div class="row c">Answer with the coloured buttons</div>
+      <div class="row">&nbsp;</div>
+      <div class="row y idx" data-go="101" tabindex="0">ESCAPE TO CEEFAX...............101</div>`;
+  }
+  function answerQuiz(i){
+    if (quiz.phase !== "question" || quiz.lock) return;
+    quiz.lock = true;
+    const item = QUIZ[quiz.qi];
+    const fb = document.getElementById("qfb");
+    if (i === item.c) {
+      quiz.score++;
+      fb.innerHTML = `<span class="bgG"> CORRECT! </span>`;
+    } else {
+      fb.innerHTML = `<span class="bgR flash"> BAMBOOZLED! IT WAS ${"ABCD"[item.c]} </span>`;
+    }
+    setTimeout(() => {
+      if (currentPage !== "152") return;
+      quiz.qi++;
+      if (quiz.qi < QUIZ.length) renderQuestion();
+      else renderDone();
+    }, 1400);
+  }
+  function rankLines(s){
+    if (s === 6) return ["INTERGALACTIC GENIUS. EXPECT A","CALL ABOUT A CABINET POSITION."];
+    if (s >= 4)  return ["A LANDSLIDE. CLACTON","SALUTES YOU."];
+    if (s >= 2)  return ["MARGINAL. DEMAND A RECOUNT."," "];
+    return ["BAMBOOZLED. MOVE TO CLACTON AND","STUDY PAGES 101-104 IMMEDIATELY."];
+  }
+  function renderDone(){
+    quiz.phase = "done";
+    rotor.textContent = "END";
+    setButtons("nav");
+    const [r1, r2] = rankLines(quiz.score);
+    p152.innerHTML = `
+      ${hostHead()}
+      <div class="row">&nbsp;</div>
+      <div class="dh w"><span>YOU SCORED ${quiz.score} OUT OF ${QUIZ.length}</span></div>
+      <div class="row g">${r1}</div>
+      <div class="row g">${r2}</div>
+      <div class="row">&nbsp;</div>
+      <div class="row"><span class="bgM w flash"> VOTE BINFACE ON 6 AUGUST </span></div>
+      <div class="row">&nbsp;</div>
+      <div class="row y idx" data-go="152" tabindex="0">PLAY AGAIN.....................152</div>
+      <div class="row y idx" data-go="101" tabindex="0">BACK TO THE NEWS...............101</div>`;
+  }
+  // Delegated clicks for the quiz's dynamic rows
+  p152.addEventListener("click", e => {
+    const nav = e.target.closest("[data-go]");
+    if (nav) { go(nav.dataset.go); return; }
+    if (e.target.closest("[data-quiz-start]")) { startQuiz(); return; }
+    const ans = e.target.closest("[data-ans]");
+    if (ans) answerQuiz(+ans.dataset.ans);
   });
 </script>
 </body>
