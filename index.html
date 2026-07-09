@@ -104,7 +104,7 @@
     <!-- Rows 2-6: mosaic banner -->
     <div class="banner" id="banner" aria-hidden="true"></div>
     <!-- Row 7 -->
-    <div class="row strap"><span>CLACTON DECIDES · BY-ELECTION</span><span id="rotor" aria-label="page rotation">1/4</span></div>
+    <div class="row strap"><span id="straptext">CLACTON DECIDES · BY-ELECTION</span><span id="rotor" aria-label="page rotation">1/4</span></div>
 
     <!-- Rows 8-24: 17 content rows per page -->
     <main>
@@ -219,17 +219,25 @@
   const WORD = "CEEFAX";
   const ROWCOLS = ["#f00","#ff0","#0f0","#0ff","#00f"];
   const banner = document.getElementById("banner");
-  for (let r = 0; r < 5; r++) {
-    const div = document.createElement("div");
-    div.className = "brow";
-    const cells = "  " + [...WORD].map(ch => GLYPHS[ch][r]).join(" ");
-    for (const c of cells) {
-      const cell = document.createElement("span");
-      if (c === "#") cell.style.background = ROWCOLS[r];
-      div.appendChild(cell);
+  let bannerMode = "";
+  function renderBanner(mode){
+    if (mode === bannerMode) return;
+    bannerMode = mode;
+    if (mode === "quiz") { banner.innerHTML = logoRows(); return; }
+    banner.innerHTML = "";
+    for (let r = 0; r < 5; r++) {
+      const div = document.createElement("div");
+      div.className = "brow";
+      const cells = "  " + [...WORD].map(ch => GLYPHS[ch][r]).join(" ");
+      for (const c of cells) {
+        const cell = document.createElement("span");
+        if (c === "#") cell.style.background = ROWCOLS[r];
+        div.appendChild(cell);
+      }
+      banner.appendChild(div);
     }
-    banner.appendChild(div);
   }
+  renderBanner("ceefax");
 
   // Header clock, Ceefax format: Thu 09 Jul 21:34/56
   const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
@@ -283,8 +291,13 @@
     document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "p"+n));
     document.getElementById("pageno").textContent = n;
     document.getElementById("pageno2").textContent = n;
-    if (n === "152") renderQuizIntro();
-    else {
+    if (n === "152") {
+      renderBanner("quiz");
+      document.getElementById("straptext").textContent = "BAMBOOZLE! · NO CONFERRING";
+      renderQuizIntro();
+    } else {
+      renderBanner("ceefax");
+      document.getElementById("straptext").textContent = "CLACTON DECIDES · BY-ELECTION";
       rotor.textContent = `${ORDER.indexOf(n)+1}/${ORDER.length}`;
       setButtons("nav");
     }
@@ -368,28 +381,34 @@
   );
   const logoRows = () => mosaicRows(LOGO, 0);
 
-  // Binber Boozler himself: bin head, visor, bow tie, natty red suit
+  // Binber Boozler himself: lid handle, bin head, visor eyes,
+  // bow tie, red suit with shirt and hands
   const HOST = [
-    ".wwwwwww.",
-    ".wowwwow.",
-    ".wwwwwww.",
-    "..wwwww..",
-    "...wmw...",
-    "..rrrrr..",
-    ".rrwwwrr.",
+    "....www....",
+    ".wwwwwwwww.",
+    "..wwwwwww..",
+    "..wowwwow..",
+    "..wwwwwww..",
+    "..w.w.w.w..",
+    "...wwwww...",
+    "....mmm....",
+    ".rrrwwwrrr.",
+    "rrrrwwwrrrr",
+    "yrrrwwwrrry",
   ];
-  const hostRows = () => mosaicRows(HOST, 15);
+  const hostRows = () => mosaicRows(HOST, 14);
+  const hostHead = () => mosaicRows(HOST.slice(0, 7), 14);
   function renderQuizIntro(){
     quiz.phase = "intro"; quiz.qi = 0; quiz.score = 0; quiz.lock = false;
     rotor.textContent = "QUIZ";
     setButtons("intro");
     p152.innerHTML = `
-      ${logoRows()}
-      <div class="row c">WITH YOUR HOST, BINBER BOOZLER</div>
       ${hostRows()}
+      <div class="row c">      YOUR HOST, BINBER BOOZLER</div>
       <div class="row">&nbsp;</div>
       <div class="row w">Six questions on the by-election.</div>
       <div class="row w">No prizes, only glory.</div>
+      <div class="row">&nbsp;</div>
       <div class="row"><span class="bgR flash" data-quiz-start style="cursor:pointer"> PRESS RED TO BEGIN </span></div>
       <div class="row y idx" data-go="101" tabindex="0">CHICKEN OUT....................101</div>`;
   }
@@ -403,15 +422,17 @@
     rotor.textContent = `Q${quiz.qi+1}/${QUIZ.length}`;
     setButtons("abcd");
     p152.innerHTML = `
-      ${logoRows()}
       <div class="row c">QUESTION ${quiz.qi+1} OF ${QUIZ.length}            SCORE ${quiz.score}</div>
       <div class="row">&nbsp;</div>
       <div class="row w">${item.q[0]}</div>
       <div class="row w">${item.q[1]}</div>
       <div class="row">&nbsp;</div>
       ${item.a.map((a,i) => `<div class="row ans ${ACOL[i]}" data-ans="${i}" tabindex="0">${"ABCD"[i]}  ${a}</div>`).join("")}
+      <div class="row">&nbsp;</div>
       <div class="row" id="qfb">&nbsp;</div>
+      <div class="row">&nbsp;</div>
       <div class="row c">Answer with the coloured buttons</div>
+      <div class="row">&nbsp;</div>
       <div class="row y idx" data-go="101" tabindex="0">ESCAPE TO CEEFAX...............101</div>`;
   }
   function answerQuiz(i){
@@ -444,10 +465,9 @@
     setButtons("nav");
     const [r1, r2] = rankLines(quiz.score);
     p152.innerHTML = `
-      ${logoRows()}
+      ${hostHead()}
       <div class="row">&nbsp;</div>
       <div class="dh w"><span>YOU SCORED ${quiz.score} OUT OF ${QUIZ.length}</span></div>
-      <div class="row">&nbsp;</div>
       <div class="row g">${r1}</div>
       <div class="row g">${r2}</div>
       <div class="row">&nbsp;</div>
