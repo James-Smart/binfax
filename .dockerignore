@@ -1,0 +1,7 @@
+.git
+.env
+.env.*
+*.log
+.DS_Store
+README.md
+analytics

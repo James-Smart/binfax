@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CEEFAX P101 — Clacton Decides · Vote Binface</title>
+<meta name="description" content="Ceefax lives. Rolling teletext coverage of the 2026 Clacton by-election: Count Binface v Nigel Farage. Manifesto, odds and quotes on pages 101-104.">
+<meta property="og:title" content="CEEFAX P101 — Clacton Decides">
+<meta property="og:description" content="Count Binface v Nigel Farage. Intergalactic. Independent. In a bin.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ceefax.info/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>&#128465;</text></svg>">
+<!-- Umami analytics (self-hosted, cookie-free). Set the real website ID after
+     creating the site in your Umami dashboard — see README. -->
+<script defer src="https://analytics.ceefax.info/script.js" data-website-id="REPLACE-WITH-UMAMI-WEBSITE-ID"></script>
+</head>
+<body>
+<style>
+  :root{
+    --tt-black:#000; --tt-red:#f00; --tt-green:#0f0; --tt-yellow:#ff0;
+    --tt-blue:#00f; --tt-magenta:#f0f; --tt-cyan:#0ff; --tt-white:#fff;
+  }
+  /* Deliberately single-theme: a teletext screen is black in any weather. */
+  html,body{height:100%; margin:0; background:var(--tt-black); overflow:hidden;}
+  .stage{height:100%; display:flex; align-items:center; justify-content:center;}
+  /* True teletext raster: 40 cols x 25 rows. Character cells get an
+     authentic Mode-7 horizontal stretch via transform in JS, which makes
+     the whole page land at ~4:3 like a real telly. */
+  .screen{
+    font-family:"Courier New",ui-monospace,Menlo,Consolas,monospace;
+    font-weight:700;
+    font-size:16px;
+    line-height:1.22;
+    color:var(--tt-white);
+    width:40ch;
+    text-shadow:0 0 2px currentColor;
+    transform-origin:center center;
+    flex:none;
+  }
+  .scanlines{
+    position:fixed; inset:0; pointer-events:none; z-index:9;
+    background:
+      repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0 2px, rgba(0,0,0,.25) 2px 3px),
+      radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,.45) 100%);
+  }
+  .row{height:1.22em; overflow:hidden; white-space:pre;}
+  .y{color:var(--tt-yellow);} .c{color:var(--tt-cyan);} .g{color:var(--tt-green);}
+  .r{color:var(--tt-red);} .m{color:var(--tt-magenta);} .w{color:var(--tt-white);}
+  .bgY{background:var(--tt-yellow); color:var(--tt-black); text-shadow:none;}
+  .bgG{background:var(--tt-green); color:var(--tt-black); text-shadow:none;}
+  .bgM{background:var(--tt-magenta); color:var(--tt-black); text-shadow:none;}
+
+  .strap{
+    display:flex; justify-content:space-between;
+    background:var(--tt-blue); color:var(--tt-white);
+    padding:0 1ch;
+  }
+
+  /* Teletext double-height: a headline line occupies two rows */
+  .dh{height:2.44em; overflow:hidden; display:flex; align-items:flex-end;}
+  .dh > span{display:inline-block; transform:scaleY(2); transform-origin:0 bottom; white-space:pre;}
+
+  .flash{animation:ttflash 1s steps(1) infinite;}
+  @keyframes ttflash{50%{opacity:0;}}
+  @media (prefers-reduced-motion: reduce){ .flash{animation:none;} }
+
+  .banner{white-space:pre; line-height:1.22;}
+
+  header.topline{display:flex; justify-content:space-between; white-space:pre; height:1.22em;}
+
+  .fastext{display:flex; height:1.22em;}
+  .fastext button{
+    all:unset; cursor:pointer; flex:1; text-align:center;
+    font:inherit; font-weight:700; white-space:nowrap; overflow:hidden;
+    text-shadow:0 0 2px currentColor;
+  }
+  .fastext button:focus-visible{outline:2px solid var(--tt-white); outline-offset:-2px;}
+  .fastext .fr{color:var(--tt-red);} .fastext .fg{color:var(--tt-green);}
+  .fastext .fy{color:var(--tt-yellow);} .fastext .fc{color:var(--tt-cyan);}
+  .fastext button::before{content:"█ ";}
+
+  .idx{cursor:pointer;}
+  .idx:hover, .idx:focus-visible{background:var(--tt-blue); outline:none;}
+  main{height:21.96em; overflow:hidden;} /* exactly 18 rows */
+  .page{display:none;}
+  .page.on{display:block;}
+  .hidden-note{position:absolute; left:-9999px;}
+</style>
+
+<div class="stage">
+  <div class="screen" id="screen">
+    <!-- Row 1 -->
+    <header class="topline"><span class="w">P<span id="pageno">101</span></span><span class="g">CEEFAX <span id="pageno2">101</span></span><span class="y" id="clock">Thu 09 Jul 21:34/56</span></header>
+    <!-- Rows 2-6: mosaic banner -->
+    <div class="banner" id="banner" aria-hidden="true"></div>
+    <!-- Row 7 -->
+    <div class="row strap"><span>CLACTON DECIDES · BY-ELECTION</span><span id="rotor" aria-label="page rotation">1/4</span></div>
+
+    <!-- Rows 8-24: 17 content rows per page -->
+    <main>
+      <!-- P101 NEWS -->
+      <section class="page on" id="p101">
+        <div class="dh y"><span>BINFACE v FARAGE: THE</span></div>
+        <div class="dh y"><span>BATTLE FOR CLACTON</span></div>
+        <div class="row">&nbsp;</div>
+        <div class="row w">COUNT BINFACE is now the sole</div>
+        <div class="row w">big-name rival to Nigel Farage,</div>
+        <div class="row w">after Labour, the Tories, Lib</div>
+        <div class="row w">Dems and Greens refused to stand.</div>
+        <div class="row">&nbsp;</div>
+        <div class="row c">Farage quit on 7 July amid a</div>
+        <div class="row c">probe into a £5m payment, gifts</div>
+        <div class="row c">and crypto lobbying. Poll: 6 Aug.</div>
+        <div class="row">&nbsp;</div>
+        <div class="row"><span class="bgM w flash"> INTERGALACTIC. INDEPENDENT. IN A BIN </span></div>
+        <div class="row y idx" data-go="102" tabindex="0">BINFACE MANIFESTO IN FULL.......102</div>
+        <div class="row y idx" data-go="103" tabindex="0">ODDS SLASHED ON THE COUNT.......103</div>
+        <div class="row y idx" data-go="104" tabindex="0">QUOTES OF THE CAMPAIGN..........104</div>
+      </section>
+
+      <!-- P102 MANIFESTO -->
+      <section class="page" id="p102">
+        <div class="dh y"><span>THE BINFACE MANIFESTO</span></div>
+        <div class="row c">"AN INDEPENDENT SPACE WARRIOR,</div>
+        <div class="row c"> READY TO SERVE CLACTON"</div>
+        <div class="row">&nbsp;</div>
+        <div class="row w"><span class="g">1</span> 99 FLAKES CAPPED AT 99p.</div>
+        <div class="row c">  "A SEASIDE TOWN. EASY WIN."</div>
+        <div class="row w"><span class="g">2</span> AT LEAST ONE (1) AFFORDABLE</div>
+        <div class="row w">  HOME. BUILT.</div>
+        <div class="row w"><span class="g">3</span> NURSES' PAY TIED TO</div>
+        <div class="row w">  MINISTERS' SALARIES.</div>
+        <div class="row w"><span class="g">4</span> NATIONALISE ADELE.</div>
+        <div class="row w"><span class="g">5</span> RENAME LONDON BRIDGE AFTER</div>
+        <div class="row w">  PHOEBE WALLER-BRIDGE.</div>
+        <div class="row w"><span class="g">6</span> RESTORE CEEFAX. <span class="m">(YOU ARE</span></div>
+        <div class="row m">  LOOKING AT IT. DELIVERED.)</div>
+        <div class="row w"><span class="g">7</span> SAVE £380,000: NO 2ND VOTE.</div>
+        <div class="row"><span class="bgG"> FULLY COSTED. FULLY LIDDED. </span></div>
+      </section>
+
+      <!-- P103 ODDS -->
+      <section class="page" id="p103">
+        <div class="dh y"><span>ODDS TUMBLE ON OLD BINNY</span></div>
+        <div class="row">&nbsp;</div>
+        <div class="row c">LATEST PRICES (WILLIAM HILL):</div>
+        <div class="row w">FARAGE (REFORM).........1/6</div>
+        <div class="row w">BINFACE (IND)...........4/1 <span class="g flash">◄IN!</span></div>
+        <div class="row w">FOX (RECLAIM)..........66/1</div>
+        <div class="row w">A.N. OTHER LOONY......100/1</div>
+        <div class="row">&nbsp;</div>
+        <div class="row w">Punters pile onto the Count as</div>
+        <div class="row w">an anti-Farage tactical voting</div>
+        <div class="row w">drive gathers pace across Essex.</div>
+        <div class="row">&nbsp;</div>
+        <div class="row c">Nine candidates expected. Binny</div>
+        <div class="row c">needs just ten local nominations.</div>
+        <div class="row">&nbsp;</div>
+        <div class="row g">HIS CORE APPEAL: HE IS SIMPLY</div>
+        <div class="row"><span class="g">NOT NIGEL FARAGE. </span><span class="bgY"> NEVER WASTED </span></div>
+      </section>
+
+      <!-- P104 QUOTES -->
+      <section class="page" id="p104">
+        <div class="dh y"><span>QUOTES OF THE CAMPAIGN</span></div>
+        <div class="row c">COUNT BINFACE, LBC:</div>
+        <div class="row w">"Like Avengers Endgame, there is</div>
+        <div class="row w">a small window of opportunity in</div>
+        <div class="row w">which I actually become an MP."</div>
+        <div class="row">&nbsp;</div>
+        <div class="row c">ON THE BIG PARTIES PULLING OUT:</div>
+        <div class="row w">"Are they running scared from</div>
+        <div class="row w">old Binny?"</div>
+        <div class="row">&nbsp;</div>
+        <div class="row c">RACHEL REEVES, CHANCELLOR:</div>
+        <div class="row w">"If he wants to spend the summer</div>
+        <div class="row w">arguing with a bin, I won't stop</div>
+        <div class="row w">him."</div>
+        <div class="row">&nbsp;</div>
+        <div class="row g">MARTIN BELL URGES VOTERS TO BACK</div>
+        <div class="row g">"THE RIGHT INDEPENDENT CANDIDATE"</div>
+      </section>
+    </main>
+
+    <!-- Row 25 -->
+    <nav class="fastext" aria-label="Fastext page links">
+      <button class="fr" data-go="101">News</button>
+      <button class="fg" data-go="102">Pledges</button>
+      <button class="fy" data-go="103">Odds</button>
+      <button class="fc" data-go="104">Quotes</button>
+    </nav>
+  </div>
+  <p class="hidden-note">A parody Ceefax teletext page supporting Count Binface in the 2026 Clacton by-election. Pages rotate automatically; use the coloured buttons to navigate.</p>
+</div>
+<div class="scanlines" aria-hidden="true"></div>
+
+<script>
+  // Mosaic banner: 5-row pixel letters, one colour per row (teletext rainbow)
+  const GLYPHS = {
+    C:[".###.","#....","#....","#....",".###."],
+    E:["####.","#....","###..","#....","####."],
+    F:["####.","#....","###..","#....","#...."],
+    A:[".###.","#...#","#####","#...#","#...#"],
+    X:["#...#",".#.#.","..#..",".#.#.","#...#"],
+  };
+  const WORD = "CEEFAX";
+  const ROWCOLS = ["#f00","#ff0","#0f0","#0ff","#00f"];
+  const banner = document.getElementById("banner");
+  for (let r = 0; r < 5; r++) {
+    const div = document.createElement("div");
+    div.textContent = "  " + [...WORD].map(ch => GLYPHS[ch][r].replace(/#/g,"█").replace(/\./g," ")).join(" ");
+    div.style.color = ROWCOLS[r];
+    banner.appendChild(div);
+  }
+
+  // Header clock, Ceefax format: Thu 09 Jul 21:34/56
+  const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  const MONS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const p2 = n => String(n).padStart(2,"0");
+  function tick(){
+    const d = new Date();
+    document.getElementById("clock").textContent =
+      `${DAYS[d.getDay()]} ${p2(d.getDate())} ${MONS[d.getMonth()]} ${p2(d.getHours())}:${p2(d.getMinutes())}/${p2(d.getSeconds())}`;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Fill the viewport like a real telly.
+  // Mode 7 cells were much wider than Courier's: stretching X by ~1.69
+  // relative to Y reproduces the chunky teletext look AND makes the
+  // 40x25 page land at ~4:3. We fit that shape to the viewport, letting
+  // either axis stretch a further 20% to soak up leftover space before
+  // black bars appear.
+  const screen = document.getElementById("screen");
+  const CELL_STRETCH = 1.69;
+  const MAX_EXTRA = 1.2;
+  function fit(){
+    const w = screen.offsetWidth * CELL_STRETCH, h = screen.offsetHeight;
+    let sx = window.innerWidth / w, sy = window.innerHeight / h;
+    if (sx > sy * MAX_EXTRA) sx = sy * MAX_EXTRA;
+    if (sy > sx * MAX_EXTRA) sy = sx * MAX_EXTRA;
+    screen.style.transform = `scale(${sx * CELL_STRETCH}, ${sy})`;
+  }
+  window.addEventListener("resize", fit);
+  window.addEventListener("orientationchange", fit);
+  fit();
+
+  // Page carousel: rotate like Ceefax used to, every 20 seconds.
+  // Manual navigation (fastext, index, arrow keys) restarts the timer.
+  const ORDER = ["101","102","103","104"];
+  const DWELL = 20000;
+  let current = 0, timer;
+  function show(i){
+    current = ((i % ORDER.length) + ORDER.length) % ORDER.length;
+    const n = ORDER[current];
+    document.querySelectorAll(".page").forEach(p => p.classList.toggle("on", p.id === "p"+n));
+    document.getElementById("pageno").textContent = n;
+    document.getElementById("pageno2").textContent = n;
+    document.getElementById("rotor").textContent = `${current+1}/${ORDER.length}`;
+  }
+  function restart(){
+    clearInterval(timer);
+    timer = setInterval(() => show(current + 1), DWELL);
+  }
+  function go(n){ show(ORDER.indexOf(n)); restart(); }
+  restart();
+
+  document.querySelectorAll("[data-go]").forEach(el => {
+    el.addEventListener("click", () => go(el.dataset.go));
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(el.dataset.go); } });
+  });
+  window.addEventListener("keydown", e => {
+    if (e.key === "ArrowRight") { show(current + 1); restart(); }
+    if (e.key === "ArrowLeft")  { show(current - 1); restart(); }
+  });
+</script>
+</body>
+</html>
