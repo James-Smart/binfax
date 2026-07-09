@@ -1,8 +1,14 @@
 services:
-  umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
+  web:
+    build: .
     expose:
-      - "3000"          # Traefik routes here; never map 80/443
+      - "8080"          # Traefik routes ceefax.info here; never map 80/443
+    restart: unless-stopped
+
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-v2.15.1
+    expose:
+      - "3000"          # Traefik routes analytics.ceefax.info here
     environment:
       DATABASE_URL: postgresql://umami:${DB_PASSWORD}@db:5432/umami
       DATABASE_TYPE: postgresql

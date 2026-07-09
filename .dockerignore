@@ -4,4 +4,4 @@
 *.log
 .DS_Store
 README.md
-analytics
+docker-compose.yml
