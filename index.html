@@ -343,29 +343,54 @@
   const quiz = { phase:"intro", qi:0, score:0, lock:false };
   const p152 = document.getElementById("p152");
 
-  // Binber Boozler: an artist's impression, in mosaic
-  const HOST = ["..#####..","#########","#.o###o.#","#########",".#..#..#."];
-  function hostRows(){
-    return HOST.map(line => `<div class="face"><span style="width:15ch"></span>${
-      [...line].map(c => `<span style="background:${c==="#" ? "#fff" : c==="o" ? "var(--tt-cyan)" : "transparent"}"></span>`).join("")
+  // Original mosaic art (drawn here, not copied from Teletext Ltd):
+  // cell colour codes — y yellow, r red, w white, o cyan, m magenta
+  const MCOL = {y:"var(--tt-yellow)", r:"var(--tt-red)", w:"#fff", o:"var(--tt-cyan)", m:"var(--tt-magenta)"};
+  function mosaicRows(rows, indent){
+    return rows.map(line => `<div class="face"><span style="width:${indent}ch"></span>${
+      [...line].map(c => `<span style="background:${MCOL[c] || "transparent"}"></span>`).join("")
     }</div>`).join("");
   }
+
+  // BAMBOOZLE! wordmark: variable-width pixel letters, 39 cols total
+  const LFONT = {
+    B:["##.","#.#","##.","#.#","##."],
+    A:[".#.","#.#","###","#.#","#.#"],
+    M:["#...#","##.##","#.#.#","#...#","#...#"],
+    O:["###","#.#","#.#","#.#","###"],
+    Z:["###","..#",".#.","#..","###"],
+    L:["#..","#..","#..","#..","###"],
+    E:["###","#..","##.","#..","###"],
+    "!":["#","#","#",".","#"],
+  };
+  const LOGO = Array.from({length:5}, (_,r) =>
+    [..."BAMBOOZLE!"].map(ch => LFONT[ch][r].replace(/#/g, ch === "!" ? "r" : "y")).join(".")
+  );
+  const logoRows = () => mosaicRows(LOGO, 0);
+
+  // Binber Boozler himself: bin head, visor, bow tie, natty red suit
+  const HOST = [
+    ".wwwwwww.",
+    ".wowwwow.",
+    ".wwwwwww.",
+    "..wwwww..",
+    "...wmw...",
+    "..rrrrr..",
+    ".rrwwwrr.",
+  ];
+  const hostRows = () => mosaicRows(HOST, 15);
   function renderQuizIntro(){
     quiz.phase = "intro"; quiz.qi = 0; quiz.score = 0; quiz.lock = false;
     rotor.textContent = "QUIZ";
     setButtons("intro");
     p152.innerHTML = `
-      <div class="dh y"><span>BAMBOOZLE!</span></div>
+      ${logoRows()}
       <div class="row c">WITH YOUR HOST, BINBER BOOZLER</div>
-      <div class="row">&nbsp;</div>
       ${hostRows()}
       <div class="row">&nbsp;</div>
-      <div class="row w">Six teletext questions on the</div>
-      <div class="row w">Clacton by-election. No prizes,</div>
-      <div class="row w">only glory.</div>
-      <div class="row">&nbsp;</div>
+      <div class="row w">Six questions on the by-election.</div>
+      <div class="row w">No prizes, only glory.</div>
       <div class="row"><span class="bgR flash" data-quiz-start style="cursor:pointer"> PRESS RED TO BEGIN </span></div>
-      <div class="row">&nbsp;</div>
       <div class="row y idx" data-go="101" tabindex="0">CHICKEN OUT....................101</div>`;
   }
   function startQuiz(){
@@ -378,16 +403,14 @@
     rotor.textContent = `Q${quiz.qi+1}/${QUIZ.length}`;
     setButtons("abcd");
     p152.innerHTML = `
-      <div class="dh y"><span>BAMBOOZLE!</span></div>
+      ${logoRows()}
       <div class="row c">QUESTION ${quiz.qi+1} OF ${QUIZ.length}            SCORE ${quiz.score}</div>
       <div class="row">&nbsp;</div>
       <div class="row w">${item.q[0]}</div>
       <div class="row w">${item.q[1]}</div>
       <div class="row">&nbsp;</div>
       ${item.a.map((a,i) => `<div class="row ans ${ACOL[i]}" data-ans="${i}" tabindex="0">${"ABCD"[i]}  ${a}</div>`).join("")}
-      <div class="row">&nbsp;</div>
       <div class="row" id="qfb">&nbsp;</div>
-      <div class="row">&nbsp;</div>
       <div class="row c">Answer with the coloured buttons</div>
       <div class="row y idx" data-go="101" tabindex="0">ESCAPE TO CEEFAX...............101</div>`;
   }
@@ -421,7 +444,7 @@
     setButtons("nav");
     const [r1, r2] = rankLines(quiz.score);
     p152.innerHTML = `
-      <div class="dh y"><span>BAMBOOZLE!</span></div>
+      ${logoRows()}
       <div class="row">&nbsp;</div>
       <div class="dh w"><span>YOU SCORED ${quiz.score} OUT OF ${QUIZ.length}</span></div>
       <div class="row">&nbsp;</div>
