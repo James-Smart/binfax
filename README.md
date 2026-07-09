@@ -1,4 +1,4 @@
-# ceefax.info — Clacton Decides
+# ceefax.cloud — Clacton Decides
 
 A parody Ceefax teletext page backing Count Binface in the 2026 Clacton
 by-election. Static single page (`index.html`) served by nginx, with
@@ -27,15 +27,15 @@ The Umami script in `index.html` 404s harmlessly until analytics is live.
 2. **Environment** tab: set `DB_PASSWORD` and `APP_SECRET`
    (see `.env.example`; generate with `openssl rand -base64 32`).
 3. **Domains** tab:
-   - `ceefax.info` → service **web**, container port **8080**, HTTPS on
-   - `analytics.ceefax.info` → service **umami**, container port **3000**, HTTPS on
-4. DNS: **A records** for `ceefax.info` and `analytics.ceefax.info` → the server IP.
-5. Deploy, then log in at `https://analytics.ceefax.info`
+   - `ceefax.cloud` → service **web**, container port **8080**, HTTPS on
+   - `analytics.ceefax.cloud` → service **umami**, container port **3000**, HTTPS on
+4. DNS: **A records** for `ceefax.cloud` and `analytics.ceefax.cloud` → the server IP.
+5. Deploy, then log in at `https://analytics.ceefax.cloud`
    (default credentials `admin` / `umami` — **change the password immediately**).
 
 ### Wire up analytics
 
-1. In Umami: **Settings → Websites → Add website**, domain `ceefax.info`.
+1. In Umami: **Settings → Websites → Add website**, domain `ceefax.cloud`.
 2. Copy the generated **Website ID** into `index.html`, replacing
    `REPLACE-WITH-UMAMI-WEBSITE-ID`.
 3. Push/redeploy. Compose only rebuilds the `web` service — Umami and the
