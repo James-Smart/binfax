@@ -33,11 +33,9 @@ The Umami script in `index.html` 404s harmlessly until analytics is live.
 5. Deploy, then log in at `https://analytics.ceefax.cloud`
    (default credentials `admin` / `umami` — **change the password immediately**).
 
-### Wire up analytics
+### Analytics wiring
 
-1. In Umami: **Settings → Websites → Add website**, domain `ceefax.cloud`.
-2. Copy the generated **Website ID** into `index.html`, replacing
-   `REPLACE-WITH-UMAMI-WEBSITE-ID`.
-3. Push/redeploy. Compose only rebuilds the `web` service — Umami and the
-   database are untouched. Views, visitors, referrers, countries and devices
-   appear on the Umami dashboard.
+The site is registered in Umami (domain `ceefax.cloud`) and its website ID
+is set on the tracking script in `index.html`. If the Umami database is ever
+reset, re-add the website and update `data-website-id` to match. Compose only
+rebuilds the `web` service on redeploy — Umami and the database are untouched.
