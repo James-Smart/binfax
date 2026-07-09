@@ -63,7 +63,10 @@
   @keyframes ttflash{50%{opacity:0;}}
   @media (prefers-reduced-motion: reduce){ .flash{animation:none;} }
 
-  .banner{white-space:pre; line-height:1.22;}
+  /* Banner mosaic is drawn as CSS cells, not font glyphs — block characters
+     render with unreliable widths on mobile monospace fonts */
+  .banner .brow{display:flex; height:1.22em;}
+  .banner .brow span{flex:none; width:1ch; height:100%;}
 
   header.topline{display:flex; justify-content:space-between; white-space:pre; height:1.22em;}
 
@@ -76,7 +79,10 @@
   .fastext button:focus-visible{outline:2px solid var(--tt-white); outline-offset:-2px;}
   .fastext .fr{color:var(--tt-red);} .fastext .fg{color:var(--tt-green);}
   .fastext .fy{color:var(--tt-yellow);} .fastext .fc{color:var(--tt-cyan);}
-  .fastext button::before{content:"█ ";}
+  .fastext button::before{
+    content:""; display:inline-block; width:1ch; height:.9em;
+    background:currentColor; margin-right:1ch; vertical-align:-.08em;
+  }
 
   .idx{cursor:pointer;}
   .idx:hover, .idx:focus-visible{background:var(--tt-blue); outline:none;}
@@ -207,8 +213,13 @@
   const banner = document.getElementById("banner");
   for (let r = 0; r < 5; r++) {
     const div = document.createElement("div");
-    div.textContent = "  " + [...WORD].map(ch => GLYPHS[ch][r].replace(/#/g,"█").replace(/\./g," ")).join(" ");
-    div.style.color = ROWCOLS[r];
+    div.className = "brow";
+    const cells = "  " + [...WORD].map(ch => GLYPHS[ch][r]).join(" ");
+    for (const c of cells) {
+      const cell = document.createElement("span");
+      if (c === "#") cell.style.background = ROWCOLS[r];
+      div.appendChild(cell);
+    }
     banner.appendChild(div);
   }
 
